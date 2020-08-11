@@ -6,66 +6,96 @@ require("console.table");
 // create the connection information for the sql database
 var connection = mysql.createConnection({
   host: "localhost",
-  // Your port; if not 3306
   port: 3306,
-  // Your username
   user: "root",
-  // Your password
   password: "password",
   database: "bamazon_db"
 });
 
-  connection.connect(function(err) {
-    if (err) {
-      console.error("error connecting: " + err.stack);
+connection.connect(function (err) {
+  if (err) {
+    console.error("error connecting: " + err.stack);
+  }
+  loadProducts();
+});
+
+
+function loadProducts() {
+  connection.query(
+    "SELECT * FROM PRODUCTS", function (err, response) {
+      if (err) throw err;
+      console.table(response);
+      start(response);
     }
-    loadProducts();
-  });
+  )
+};
 
-
-  function loadProducts() {
-    connection.query(
-        "SELECT * FROM PRODUCTS", function (err, response) {
-            if (err) throw err;
-            console.table(response);
-        start(response);    
-        } 
-    )};
-
-    function start(products){
-      inquirer
-      .prompt([
-        {
+function start(products) {
+  inquirer
+    .prompt([
+      {
         name: "id",
         type: "list",
         message: "What is the ID of the product you are looking to buy?",
-        choices: ["shirt", "pants", "shoes"]
-        },
-        {
-          name: "quantity",
-          type: "input",
-          message: "How many units of the product would you like to buy?",
-          validate: function(value) {
-            if (isNaN(value) === false) {
-              return true;
-            }
-            return false;
+        choices: ["shirt", "pants", "shoes", "necklace", "earrings", "scarf", "sweater", "boots", "skirt", "dress", "blouse", "blazer"]
+      },
+      {
+        name: "quantity",
+        type: "input",
+        message: "How many units of the product would you like to buy?",
+        validate: function (value) {
+          if (isNaN(value) === false) { //as long as the value is a number...
+            return true;
           }
-        },
+          return false;
+        }
+      },
 
-      ])
-      .then (function(answers){
-        
-      })
-    }
+//     ])
+//     .then(function (value) {
+//       var enough = parseInt(value.enough);
+//       var products = checkInventory(choiceId, inventory);
+//       if (enough > products.stock_quantity) {
+//         console.log("\nSorry, we don't have that many left.");
+//         loadProducts();
+//       }
+//       else {
+//         bought(products, enough);
+//       }
+
+//     })
+// }
+// function bought(products, quantity) {
+//   connection.query(
+//     "UPDATE products SET stock_quantity = stock_quantity - ? WHERE item_id = ?",
+//     [quantity, products.item_id],
+//     function (err, res) {
+//       console.log("\nYou bought " + quantity + " " + products.product_name + "'s!");
+//       loadProducts();
+//     }
+//   );
+// }
+
+// // Check to see if the product the user chose exists in the inventory
+// function checkInventory(choiceId, inventory) {
+//   for (var i = 0; i < inventory.length; i++) {
+//     if (inventory[i].item_id === choiceId) {
+//       // If a matching product is found, return the product
+//       return inventory[i];
+//     }
+//   }
+//   // Otherwise return null
+//   return null;
+// }
+
+
+
+
 
 
     // Once the customer has placed the order, your application should check if your store has enough of the product to meet the customer's request. 
 //--> go see how many units there are of that item in the database.
 //--> does input of customer for the quantity match or fall below the quantity in the db
-
-
-
 
 
 //if false/not, console log "sorry! we only have (#) left."
